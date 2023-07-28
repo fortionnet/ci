@@ -6,15 +6,17 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+  IMAGE_NAME: "ghcr.io/fortionnet/ci"
+  IMAGE_TAG: $(date +%s)
+  
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ghcr.io/fortionnet/ci:$(date +%s)
+      run: docker build . --file Dockerfile --tag $IMAGE_NAME:$IMAGE_TAG
     - name: Push the Docker image
-      run: docker push ghcr.io/fortionnet/ci:$(date +%s)
+      run: docker push $IMAGE_NAME:$IMAGE_TAG

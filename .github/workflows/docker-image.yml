@@ -9,14 +9,19 @@ on:
 env:
   DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
   IMAGE_NAME: "ghcr.io/fortionnet/ci"
-  IMAGE_TAG: $(date +%s)
   
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    
+    - name: "Set current date as env variable"
+      run: |
+        echo "builddate=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+      id: version  # this is used on variable path
+    
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag $IMAGE_NAME:$IMAGE_TAG
+      run: docker build . --file Dockerfile --tag $IMAGE_NAME:${{ steps.version.outputs.builddate }}
     - name: Push the Docker image
-      run: docker push $IMAGE_NAME:$IMAGE_TAG
+      run: docker push $IMAGE_NAME:x${{ steps.version.outputs.builddate }}

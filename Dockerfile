@@ -78,8 +78,14 @@ RUN curl -L https://github.com/digitalocean/doctl/releases/download/v${DOCTL_VER
 
 # skaffold
 FROM base as skaffold
-RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.6.2/skaffold-linux-amd64 && \
   sudo install skaffold /usr/local/bin/
+
+#yq
+FROM base as yq
+ENV YQ_VERSION=4.34.2
+RUN curl -L https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64 -o yq && \
+  sudo install yq /usr/local/bin
 
 # Final Image
 FROM base
@@ -92,4 +98,5 @@ COPY --from=consul /usr/local/bin/consul /usr/local/bin
 COPY --from=vault /usr/local/bin/vault /usr/local/bin
 COPY --from=doctl /usr/local/bin/doctl /usr/local/bin
 COPY --from=skaffold /usr/local/bin/skaffold /usr/local/bin
+COPY --from=yq /usr/local/bin/yq /usr/local/bin
 #COPY update_env.py /usr/local/bin/update_env.py
